@@ -1,27 +1,54 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import axios from "axios";
-
+import { Note } from "../api/notesApi";
+import { addNote, editNote } from "../services/notesService";
 interface NoteFormProps {
-  onNoteAdded: () => void;
+  onNoteAdded?: () => void;
+  onNoteUpdated?: () => void;
+  editingNote?: Note | null;
+  onCancelEdit?: () => void;
 }
 
-const NoteForm: React.FC<NoteFormProps> = ({ onNoteAdded }) => {
-  const [title, setTitle] = useState<string>("");
-  const [content, setContent] = useState<string>("");
+const NoteForm: React.FC<NoteFormProps> = ({
+  onNoteAdded,
+  onNoteUpdated,
+  editingNote,
+  onCancelEdit,
+}) => {
+  const [title, setTitle] = useState<string>(
+    editingNote ? editingNote.title : ""
+  );
+  const [content, setContent] = useState<string>(
+    editingNote ? editingNote.content : ""
+  );
+
+  useEffect(() => {
+    if (editingNote) {
+      setTitle(editingNote.title);
+      setContent(editingNote.content);
+    } else {
+      setTitle("");
+      setContent("");
+    }
+  }, [editingNote]);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
 
     try {
-      await axios.post("http://localhost:8000/notes", {
-        title,
-        content,
-      });
+      if (editingNote) {
+        // update
+        await editNote(editingNote.id, { title, content });
+        onNoteUpdated?.();
+      } else {
+        // add
+        await addNote({ title, content });
+        onNoteAdded?.();
+      }
       setTitle("");
       setContent("");
-      onNoteAdded();
     } catch (error) {
-      console.error("There was an error creating the note!", error);
+      console.error("Error while saving the note!", error);
     }
   };
 
@@ -40,9 +67,13 @@ const NoteForm: React.FC<NoteFormProps> = ({ onNoteAdded }) => {
         placeholder="Note Content"
         required
       />
-      <button type="submit">Add Note</button>
+      <button type="submit">{editingNote ? "Update Note" : "Add Note"}</button>
+      {editingNote && (
+        <button type="button" className="cancel-btn" onClick={onCancelEdit}>
+          Cancel
+        </button>
+      )}
     </form>
   );
 };
-
 export default NoteForm;

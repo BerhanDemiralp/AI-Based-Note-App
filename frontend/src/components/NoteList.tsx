@@ -7,13 +7,13 @@ import { Note } from "../api/notesApi";
 
 interface NoteListProps {
   refreshKey: number;
-  //onEdit: (note: Note) => void;
+  onEdit: (note: Note) => void;
   onNoteDeleted: () => void;
 }
 
 const NoteList: React.FC<NoteListProps> = ({
   refreshKey,
-  //onEdit,
+  onEdit,
   onNoteDeleted,
 }) => {
   const [notes, setNotes] = useState<Note[]>([]);
@@ -26,7 +26,7 @@ const NoteList: React.FC<NoteListProps> = ({
         setNotes(fetchedNotes);
       } catch (err) {
         // Servisten gelen hatayı yakala
-        console.error(err);
+        console.error(error);
         setError("Notlar yüklenemedi. Lütfen daha sonra tekrar deneyin.");
       }
     };
@@ -52,7 +52,7 @@ const NoteList: React.FC<NoteListProps> = ({
             key={note.id}
             note={note}
             onDelete={handleDelete}
-            // onEdit={onEdit}
+            onEdit={onEdit}
           />
         ))}
       </ul>

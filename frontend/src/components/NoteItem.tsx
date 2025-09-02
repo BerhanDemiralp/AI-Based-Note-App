@@ -5,10 +5,10 @@ import { Note } from "../api/notesApi";
 interface NoteItemProps {
   note: Note;
   onDelete: (id: number) => void;
-  //onEdit: (note: Note) => void;
+  onEdit: (note: Note) => void;
 }
 
-const NoteItem: React.FC<NoteItemProps> = ({ note, onDelete }) => {
+const NoteItem: React.FC<NoteItemProps> = ({ note, onDelete, onEdit }) => {
   return (
     <li>
       <div>
@@ -16,10 +16,11 @@ const NoteItem: React.FC<NoteItemProps> = ({ note, onDelete }) => {
         <p>{note.content}</p>
       </div>
       <div className="note-actions">
-        {/*
-        <button className="edit-btn" onClick={() => onEdit(note)}>
-          Edit
-        </button>*/}
+        {
+          <button className="edit-btn" onClick={() => onEdit(note)}>
+            Edit
+          </button>
+        }
         <button className="delete-btn" onClick={() => onDelete(note.id)}>
           Delete
         </button>
