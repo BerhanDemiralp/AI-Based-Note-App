@@ -1,0 +1,27 @@
+version: "3.8"
+
+services:
+  backend:
+    build: ./backend
+    container_name: ainoteapp_backend
+    ports:
+      - "8000:8000"
+    volumes:
+      - ./backend:/app
+    command: ["uvicorn", "main:app", "--host", "0.0.0.0", "--reload"]
+
+  frontend:
+    build:
+      context: ./frontend
+    container_name: ainoteapp_frontend
+    ports:
+      - "3000:3000"
+    volumes:
+      - ./frontend:/app
+      - /app/node_modules
+    stdin_open: true
+    tty: true
+    environment:
+      - CHOKIDAR_USEPOLLING=true # CRA'nın Docker içinde dosya değişikliklerini görebilmesi için
+      - WATCHPACK_POLLING=true
+    command: ["npm", "start"]
