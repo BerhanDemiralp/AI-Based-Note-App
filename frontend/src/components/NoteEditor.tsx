@@ -1,68 +1,106 @@
-// frontend/src/components/NoteForm.tsx
+// frontend/src/components/NoteEditor.tsx
 
-import React, { useState, useEffect } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import { Note } from "../api/notesApi";
-import { addNote, editNote } from "../services/notesService";
+import { addNote, editNote, removeNote } from "../services/notesService"; // removeNote eklendi
 
 interface NoteFormProps {
   editingNote?: Note | null;
   onNoteSaved: (savedNote?: Note) => void;
+  onNoteDeleted: () => void; // Silme işlemi için yeni prop
 }
 
-const NoteEditor: React.FC<NoteFormProps> = ({ editingNote, onNoteSaved }) => {
+const NoteEditor: React.FC<NoteFormProps> = ({
+  editingNote,
+  onNoteSaved,
+  onNoteDeleted,
+}) => {
   const [title, setTitle] = useState<string>("");
   const [content, setContent] = useState<string>("");
-  const [isNewNote, setIsNewNote] = useState<boolean>(true);
 
-  // Başlangıçta gelen not verisini state'e yükler
+  // En son KAYDEDİLEN değerler ve not id'si burada tutulur
+  const lastSavedRef = useRef<{
+    title: string;
+    content: string;
+    noteId: number | string | null;
+  }>({ title: "", content: "", noteId: null });
+
+  // editingNote değiştiğinde formu doldur ve "son kaydedilen"i güncelle
   useEffect(() => {
     if (editingNote) {
-      setTitle(editingNote.title);
-      setContent(editingNote.content);
-      setIsNewNote(false);
+      const safeTitle = editingNote.title || "";
+      const safeContent = editingNote.content || "";
+      setTitle(safeTitle);
+      setContent(safeContent);
+      lastSavedRef.current = {
+        title: safeTitle,
+        content: safeContent,
+        noteId: editingNote.id as unknown as number | string,
+      };
     } else {
       setTitle("");
       setContent("");
-      setIsNewNote(true);
+      lastSavedRef.current = { title: "", content: "", noteId: null };
     }
   }, [editingNote]);
 
-  // Debounce mekanizması için useEffect
+  // Debounce + değişiklik kontrolü
   useEffect(() => {
-    // Eğer yeni bir not oluşturuluyorsa ve içerik boşsa kaydetme
-    if (isNewNote && !title && !content) {
-      return;
-    }
+    // tamamen boşsa kaydetme
+    if (!title.trim() && !content.trim()) return;
 
-    // Kullanıcı yazmayı bıraktığında kaydetmek için bir timer ayarla
+    const hasChanges =
+      title !== lastSavedRef.current.title ||
+      content !== lastSavedRef.current.content ||
+      (editingNote?.id ?? null) !== lastSavedRef.current.noteId;
+
+    if (!hasChanges) return; // DEĞİŞİKLİK YOKSA API'YE GİTME
+
     const timer = setTimeout(async () => {
-      // Sadece başlık veya içerik doluysa kaydetme işlemi yap
-      if (title || content) {
+      try {
+        if (editingNote) {
+          const updated = await editNote(editingNote.id, { title, content });
+          // başarılı kayıttan sonra referansı güncelle
+          lastSavedRef.current = {
+            title,
+            content,
+            noteId: editingNote.id as unknown as number | string,
+          };
+          onNoteSaved(updated);
+        } else {
+          const created = await addNote({ title, content });
+          // yeni not artık referans noktamız
+          lastSavedRef.current = {
+            title,
+            content,
+            noteId: created.id as unknown as number | string,
+          };
+          onNoteSaved(created);
+        }
+      } catch (error) {
+        console.error("Not kaydedilirken bir hata oluştu:", error);
+      }
+    }, 600); // 1 sn debounce
+
+    return () => clearTimeout(timer);
+  }, [title, content, editingNote?.id, onNoteSaved]);
+
+  // Silme işlemini yöneten fonksiyon
+  const handleDelete = async () => {
+    if (editingNote) {
+      const isConfirmed = window.confirm(
+        "Bu notu silmek istediğinizden emin misiniz?"
+      );
+      if (isConfirmed) {
         try {
-          if (editingNote) {
-            // Var olan notu güncelle
-            const updatedNote = await editNote(editingNote.id, {
-              title,
-              content,
-            });
-            onNoteSaved(updatedNote);
-          } else {
-            // Yeni not oluştur
-            const newNote = await addNote({ title, content });
-            onNoteSaved(newNote); // Yeni notu üst component'e ilet
-            // Yeni not oluşturulduktan sonra formu sıfırla
-            setTitle("");
-            setContent("");
-          }
+          await removeNote(editingNote.id);
+          onNoteDeleted(); // App.tsx'teki state'i güncelle
         } catch (error) {
-          console.error("Not kaydedilirken bir hata oluştu:", error);
+          console.error("Not silinirken bir hata oluştu:", error);
         }
       }
-    }, 1500); // 1.5 saniye bekleme süresi
-
-    // useEffect temizleme fonksiyonu: Yeni bir tuşa basıldığında önceki timer'ı iptal et
-    return () => clearTimeout(timer);
-  }, [title, content, editingNote, isNewNote, onNoteSaved]);
+    }
+  };
 
   return (
     <div className="note-editor">

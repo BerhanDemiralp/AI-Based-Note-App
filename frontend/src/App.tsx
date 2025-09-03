@@ -1,9 +1,8 @@
 // frontend/src/App.tsx
 
-import React, { useState } from "react";
+import React, { useState, useCallback } from "react";
 import NoteList from "./components/NoteList";
 import NoteEditor from "./components/NoteEditor";
-import NoteDetail from "./components/NoteDetail";
 import { Note } from "./api/notesApi";
 import "./App.css";
 
@@ -11,23 +10,30 @@ const App: React.FC = () => {
   const [refreshKey, setRefreshKey] = useState<number>(0);
   const [selectedNote, setSelectedNote] = useState<Note | null>(null);
 
-  const handleNoteSaved = (savedNote?: Note) => {
-    // Not kaydedildiğinde listeyi yenile
-    setRefreshKey((prevKey) => prevKey + 1);
+  // Kayıt sonrası listeyi yenile ve dönen notu seç
+  const handleNoteSaved = useCallback((savedNote?: Note) => {
+    setRefreshKey((prev) => prev + 1);
 
-    // Eğer yeni bir not eklendiyse, onu otomatik olarak seçili not yap
-    if (!selectedNote && savedNote) {
+    // Yeni notta zaten null'dı; editte de güncel veriyi anında UI'ya yansıtmak için seçimi güncelliyoruz
+    if (savedNote) {
       setSelectedNote(savedNote);
     }
-  };
+  }, []);
 
-  const handleSelectNote = (note: Note) => {
+  // Not listesinden bir not seçildiğinde veya seçim kaldırıldığında çalışır
+  const handleSelectNote = useCallback((note: Note | null) => {
     setSelectedNote(note);
-  };
+  }, []);
 
-  const handleNewNote = () => {
+  const handleNewNote = useCallback(() => {
     setSelectedNote(null);
-  };
+  }, []);
+
+  // Not silme işlemi sonrası çalışır
+  const handleNoteDeleted = useCallback(() => {
+    setSelectedNote(null);
+    setRefreshKey((prev) => prev + 1);
+  }, []);
 
   return (
     <div className="app-layout">
@@ -38,14 +44,20 @@ const App: React.FC = () => {
             + Yeni Not
           </button>
         </div>
-        <NoteList refreshKey={refreshKey} onSelectNote={handleSelectNote} />
+        <NoteList
+          refreshKey={refreshKey}
+          onSelectNote={handleSelectNote}
+          selectedNoteId={selectedNote?.id || null}
+        />
       </aside>
+
       <main className="main-content">
-        {/*
-          Burada NoteForm'u koşulsuz render ediyoruz.
-          Seçili bir not varsa düzenleme modunda, yoksa yeni not oluşturma modunda çalışacak.
-        */}
-        <NoteEditor editingNote={selectedNote} onNoteSaved={handleNoteSaved} />
+        {/* Seçili not varsa edit, yoksa create modunda çalışır */}
+        <NoteEditor
+          editingNote={selectedNote}
+          onNoteSaved={handleNoteSaved}
+          onNoteDeleted={handleNoteDeleted}
+        />
       </main>
     </div>
   );
