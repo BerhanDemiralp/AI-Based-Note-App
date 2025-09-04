@@ -1,13 +1,6 @@
 import axios from "axios";
+import { Note } from "../domain/Note";
 
-export interface Note {
-  id: number;
-  title: string;
-  content: string;
-
-  summary?: string;
-  keywords?: string[];
-}
 const API_URL = "http://localhost:8000/notes";
 
 /**

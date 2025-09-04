@@ -1,20 +1,15 @@
 // frontend/src/components/NoteEditor.tsx
 // components/NoteEditor/NoteEditor.tsx
+import { Note } from "../../domain/Note";
 import React, { useEffect, useState } from "react";
-import { Note } from "../../api/notesApi";
 import { useNoteAutosave } from "../../hooks/useNoteAutosave";
 
 interface NoteFormProps {
   selectedNote?: Note | null;
   onNoteSaved: (savedNote?: Note) => void;
-  onNoteDeleted: () => void; // Silme işlemi için yeni prop
 }
 
-const NoteEditor: React.FC<NoteFormProps> = ({
-  selectedNote,
-  onNoteSaved,
-  onNoteDeleted,
-}) => {
+const NoteEditor: React.FC<NoteFormProps> = ({ selectedNote, onNoteSaved }) => {
   const [title, setTitle] = useState<string>("");
   const [content, setContent] = useState<string>("");
 

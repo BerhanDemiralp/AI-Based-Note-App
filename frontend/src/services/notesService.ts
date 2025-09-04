@@ -2,9 +2,9 @@ import {
   fetchAllNotesFromApi,
   deleteNoteFromApi,
   updateNoteFromApi,
-  Note,
   addNoteToApi,
 } from "../api/notesApi";
+import { Note } from "../domain/Note";
 
 /**
  * Notlarla ilgili iş mantığını yöneten servis.

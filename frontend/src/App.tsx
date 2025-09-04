@@ -3,7 +3,7 @@
 import React, { useState, useCallback } from "react";
 import NoteList from "./components/notes/NoteList";
 import NoteEditor from "./components/notes/NoteEditor";
-import { Note } from "./api/notesApi";
+import { Note } from "./domain/Note";
 import "./App.css";
 
 const App: React.FC = () => {
@@ -53,11 +53,7 @@ const App: React.FC = () => {
 
       <main className="main-content">
         {/* Seçili not varsa edit, yoksa create modunda çalışır */}
-        <NoteEditor
-          selectedNote={selectedNote}
-          onNoteSaved={handleNoteSaved}
-          onNoteDeleted={handleNoteDeleted}
-        />
+        <NoteEditor selectedNote={selectedNote} onNoteSaved={handleNoteSaved} />
       </main>
     </div>
   );

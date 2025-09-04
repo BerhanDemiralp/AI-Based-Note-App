@@ -1,6 +1,6 @@
 // frontend/src/components/NoteItem.tsx
 import React from "react";
-import { Note } from "../../api/notesApi";
+import { Note } from "../../domain/Note";
 
 interface NoteItemProps {
   note: Note;
@@ -26,7 +26,7 @@ const NoteItem: React.FC<NoteItemProps> = ({
       onClick={() => onSelect(note)}
     >
       <h3>{note.title}</h3>
-      <button className="delete-btn" onClick={handleDeleteClick}>
+      <button type="button" className="delete-btn" onClick={handleDeleteClick}>
         Sil
       </button>
     </div>

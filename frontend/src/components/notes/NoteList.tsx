@@ -2,8 +2,8 @@
 import React, { useState, useEffect } from "react";
 import NoteItem from "./NoteItem";
 import { getNotes, removeNote } from "../../services/notesService";
-import { Note } from "../../api/notesApi";
-
+import { Note } from "../../domain/Note";
+import { createConfirmMessage } from "../../services/confirmService";
 interface NoteListProps {
   onSelectNote: (note: Note | null) => void;
   selectedNoteId: number | null;
@@ -31,7 +31,7 @@ const NoteList: React.FC<NoteListProps> = ({
   }, [refreshKey]);
 
   const handleDeleteNote = async (noteId: number) => {
-    const isConfirmed = window.confirm(
+    const isConfirmed = await createConfirmMessage(
       "Bu notu silmek istediğinizden emin misiniz?"
     );
     if (!isConfirmed) {

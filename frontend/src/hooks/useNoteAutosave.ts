@@ -1,7 +1,7 @@
 // hooks/useNoteAutosave.ts
 import { useEffect, useRef } from "react";
 import { addNote, editNote } from "../services/notesService";
-import { Note } from "../api/notesApi";
+import { Note } from "../domain/Note";
 import { areNoteFieldsEqual } from "../utils/areNoteFieldsEqual";
 
 type OnSaved = (savedNote: Note) => void;
