@@ -1,6 +1,6 @@
 // frontend/src/components/NoteItem.tsx
 import React from "react";
-import { Note } from "../api/notesApi";
+import { Note } from "../../api/notesApi";
 
 interface NoteItemProps {
   note: Note;

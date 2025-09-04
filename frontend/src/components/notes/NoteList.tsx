@@ -1,8 +1,8 @@
 // frontend/src/components/NoteList.tsx
 import React, { useState, useEffect } from "react";
 import NoteItem from "./NoteItem";
-import { getNotes, removeNote } from "../services/notesService";
-import { Note } from "../api/notesApi";
+import { getNotes, removeNote } from "../../services/notesService";
+import { Note } from "../../api/notesApi";
 
 interface NoteListProps {
   onSelectNote: (note: Note | null) => void;

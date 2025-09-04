@@ -1,8 +1,8 @@
 // frontend/src/App.tsx
 
 import React, { useState, useCallback } from "react";
-import NoteList from "./components/NoteList";
-import NoteEditor from "./components/NoteEditor";
+import NoteList from "./components/notes/NoteList";
+import NoteEditor from "./components/notes/NoteEditor";
 import { Note } from "./api/notesApi";
 import "./App.css";
 
@@ -54,7 +54,7 @@ const App: React.FC = () => {
       <main className="main-content">
         {/* Seçili not varsa edit, yoksa create modunda çalışır */}
         <NoteEditor
-          editingNote={selectedNote}
+          selectedNote={selectedNote}
           onNoteSaved={handleNoteSaved}
           onNoteDeleted={handleNoteDeleted}
         />
