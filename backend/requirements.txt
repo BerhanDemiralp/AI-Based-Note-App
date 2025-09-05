@@ -5,3 +5,6 @@ databases
 pydantic
 aiosqlite
 openai
+google-genai
+dotenv
+python-dotenv

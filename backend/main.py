@@ -21,9 +21,12 @@ from databases import Database
 from ai_client import call_responses_api
 from ai_json import parse_json_array_of_strings
 
+from dotenv import load_dotenv
+load_dotenv()
 # ================================
 # Veritabanı kurulumu
 # ================================
+
 DATABASE_URL = os.getenv("DATABASE_URL", "sqlite:///./notes.db")
 database = Database(DATABASE_URL)
 
@@ -72,69 +75,44 @@ class AIResponse(BaseModel):
 # ================================
 # Heuristik fallback (anahtar/bağlantı yoksa)
 # ================================
-_STOPWORDS = set("""
-ve veya ile için gibi ama fakat ancak the a an to in on of with from by as is are was were be been being
-da de bu şu o ki bir birini birine mı mi mu mü
-""".split())
-
-def _fallback_titles(content: str, max_len: int = 60, n: int = 3) -> list[str]:
-    text = " ".join((content or "").split())
-    if not text:
-        return ["Yeni Not"]
-
-    first = re.split(r"[.!?\n]+", text, maxsplit=1)[0].strip(" -:;,.")[:max_len]
-
-    words = re.findall(r"[A-Za-zÇĞİÖŞÜçğıöşü0-9\-]+", text.lower())
-    freq = {}
-    for w in words:
-        if len(w) < 3 or w in _STOPWORDS:
-            continue
-        freq[w] = freq.get(w, 0) + 1
-    top = [w.capitalize() for w in sorted(freq, key=freq.get, reverse=True)[:4]]
-    kw = " ".join(top)[:max_len].strip(" -:;,.") if top else ""
-
-    cands = [c for c in [first, kw, (first + " — " + kw)[:max_len] if first and kw and len(first) < 15 else None] if c]
-    out, seen = [], set()
-    for c in cands:
-        c = " ".join(c.split()).strip(" -:;,.")
-        if c and c not in seen:
-            out.append(c); seen.add(c)
-    return (out or ["Yeni Not"])[:max(n, 1)]
-
-# ================================
-# AI işlevi: metinden başlık öner
-# ================================
-async def _suggest_titles_from_text(content: str, max_len: int = 60, n: int = 3) -> list[str]:
-    """
-    Not içeriğini OpenAI Responses API'ye gönderir, yalnızca JSON dizi bekler;
-    bozulursa toparlar; başarısızsa fallback'e düşer.
-    """
+async def _suggest_titles_from_text(content: str, max_len: int = 120, n: int = 4) -> list[str]:
     content = (content or "").strip()
     if not content:
-        return ["Yeni Not"]
+        return []
 
     system_prompt = (
         "You are a concise note-title generator.\n"
-        f"Return ONLY a JSON array of strings with {max(1, n)} alternatives.\n"
-        f"Each title must be <= {max_len} characters and in the user's language if obvious.\n"
+        f"Return ONLY a JSON array of exactly {n} strings.\n"
+        f"Do not return fewer or more. Each string must be <= {max_len} characters.\n"
         "No prose. No prefixes. JSON array only."
     )
 
+    print("[AI DEBUG] === OpenAI çağrısı başlıyor ===")
+    print("[AI DEBUG] Prompt:\n", system_prompt)
+    print("[AI DEBUG] Content:\n", content[:200], "..." if len(content) > 200 else "")
+
+    raw = None
     try:
         raw = await call_responses_api(
             system_prompt=system_prompt,
             content=content,
-            response_format={"type": "json"}
-            # extra_create_kwargs={"response_format": {"type": "json"}},
         )
-    except Exception:
-        return _fallback_titles(content, max_len=max_len, n=n)
+        print("[AI DEBUG] Raw response:", repr(raw[:500]), "..." if raw and len(raw) > 500 else "")
+    except Exception as e:
+        print("[AI ERROR] OpenAI çağrısı başarısız:", e)
+        return []
 
     titles = parse_json_array_of_strings(raw, max_len=max_len, fallback_lines=True)
-    if not titles:
-        return _fallback_titles(content, max_len=max_len, n=n)
+    print("[AI DEBUG] Parsed titles:", titles)
 
-    return titles[:max(n, 1)]
+    if not titles:
+        print("[AI WARN] Modelden geçerli başlık çıkmadı.")
+        return []
+
+    print("[AI DEBUG] Final titles:", titles)
+    return titles[:n]
+
+
 
 # ================================
 # App ömrü (DB bağlan/kopar)
@@ -167,7 +145,7 @@ app.add_middleware(
 @app.post("/ai/suggest-title", response_model=AIResponse)
 async def suggest_title(req: AIRequest):
     titles = await _suggest_titles_from_text(req.content, max_len=req.max_len, n=req.n)
-    return AIResponse(suggestions=titles)
+    return AIResponse(response=titles)
 
 # ================================
 # Note CRUD Endpoints
