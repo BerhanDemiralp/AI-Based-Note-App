@@ -1,3 +1,68 @@
-/__pycache__/
-/notes.db
-/venv/
+# ===== OS / Editor =====
+.DS_Store
+Thumbs.db
+Icon?
+*.swp
+*.swo
+.vscode/
+.idea/
+*.iml
+
+# ===== Python / FastAPI =====
+__pycache__/
+*.py[cod]
+*.pyo
+*.pyd
+*.so
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+.pyre/
+.hypothesis/
+.tox/
+.nox/
+.cache/
+.coverage
+.coverage.*
+coverage.xml
+htmlcov/
+pip-wheel-metadata/
+site/
+.eggs/
+*.egg-info/
+*.egg
+
+# ===== Virtualenv =====
+.venv/
+venv/
+env/
+ENV/
+
+# ===== Logs =====
+*.log
+logs/
+uvicorn*.log
+
+# ===== SQLite (lokal DB) =====
+# not: geliştirme DB'sini repo'ya koyma
+*.db
+*.sqlite
+*.sqlite3
+*.db-wal
+*.db-shm
+*.sqlite-wal
+*.sqlite-shm
+
+# ===== Migrations (sadece cache dosyaları) =====
+# Alembic klasörünü track etmek isteyeceksin; sadece cache/pyc'leri ignore et
+migrations/**/__pycache__/
+migrations/versions/**/__pycache__/
+migrations/versions/*.pyc
+
+# ===== Env / Secrets =====
+.env
+.env.*
+!.env.example   # <- örnek dosya commit edilsin
+
+# ===== Docker/Compose yardımcı çıktılar (opsiyonel) =====
+docker-data/
