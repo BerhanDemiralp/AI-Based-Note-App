@@ -1,7 +1,10 @@
 import axios from "axios";
-import { Note } from "../domain/Note";
+import { Note, AIRequest, AIResponse } from "../domain/Note";
 
-const API_URL = "http://localhost:8000/notes";
+// domain
+
+const NOTES_API_URL = "http://localhost:8000/notes";
+const AI_API_URL = "http://localhost:8000/ai";
 
 /**
  * API'den notları getiren fonksiyon.
@@ -9,7 +12,7 @@ const API_URL = "http://localhost:8000/notes";
  */
 export const fetchAllNotesFromApi = async (): Promise<Note[]> => {
   try {
-    const response = await axios.get<Note[]>(API_URL);
+    const response = await axios.get<Note[]>(NOTES_API_URL);
     return response.data;
   } catch (error) {
     // Hatanın çağrıcıya iletilmesi için fırlatılması daha doğru bir yaklaşımdır.
@@ -18,16 +21,29 @@ export const fetchAllNotesFromApi = async (): Promise<Note[]> => {
 };
 export const addNoteToApi = async (note: Omit<Note, "id">): Promise<Note> => {
   try {
-    const response = await axios.post<Note>(API_URL, note);
+    const response = await axios.post<Note>(NOTES_API_URL, note);
     return response.data;
   } catch (error) {
     // Hatanın çağrıcıya iletilmesi için fırlatılması daha doğru bir yaklaşımdır.
     throw new Error("Notları getirirken bir hata oluştu.");
   }
 };
+export const suggestTitleWithAIFromApi = async (
+  request: AIRequest
+): Promise<AIResponse> => {
+  try {
+    const response = await axios.post<AIResponse>(
+      `${AI_API_URL}/${"suggest-title"}`,
+      request
+    );
+    return response.data;
+  } catch (error) {
+    throw new Error("Başlık önerisi alınırken bir hata oluştu.");
+  }
+};
 export const deleteNoteFromApi = async (noteId: number): Promise<void> => {
   try {
-    await axios.delete(`${API_URL}/${noteId}`);
+    await axios.delete(`${NOTES_API_URL}/${noteId}`);
   } catch (error) {
     throw new Error(`Not silinirken bir hata oluştu: ${noteId}`);
   }
@@ -37,7 +53,7 @@ export const updateNoteFromApi = async (
   note: Omit<Note, "id">
 ): Promise<Note> => {
   try {
-    const response = await axios.put<Note>(`${API_URL}/${noteId}`, note);
+    const response = await axios.put<Note>(`${NOTES_API_URL}/${noteId}`, note);
     return response.data;
   } catch (error) {
     throw new Error(`Not silinirken bir hata oluştu: ${noteId}`);

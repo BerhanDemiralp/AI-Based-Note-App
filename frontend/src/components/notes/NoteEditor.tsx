@@ -3,7 +3,7 @@
 import { Note } from "../../domain/Note";
 import React, { useEffect, useState } from "react";
 import { useNoteAutosave } from "../../hooks/useNoteAutosave";
-
+import TitleWithSuggestions from "../ai/TitleWithSuggestions";
 interface NoteFormProps {
   selectedNote?: Note | null;
   onNoteSaved: (savedNote?: Note) => void;
@@ -30,12 +30,10 @@ const NoteEditor: React.FC<NoteFormProps> = ({ selectedNote, onNoteSaved }) => {
 
   return (
     <div className="note-editor">
-      <input
-        type="text"
-        value={title}
-        onChange={(e) => setTitle(e.target.value)}
-        placeholder="Başlık"
-        className="editor-title"
+      <TitleWithSuggestions
+        title={title}
+        content={content}
+        onTitleChange={setTitle}
       />
       <textarea
         value={content}

@@ -6,3 +6,12 @@ export interface Note {
   summary?: string;
   keywords?: string[];
 }
+export interface AIRequest {
+  content: string;
+  max_len: number;
+  language: string;
+  n: number;
+}
+export interface AIResponse {
+  response: string[];
+}

@@ -1,6 +1,6 @@
 // frontend/src/App.tsx
 
-import React, { useState, useCallback } from "react";
+import React, { useState, useEffect, useCallback } from "react";
 import NoteList from "./components/notes/NoteList";
 import NoteEditor from "./components/notes/NoteEditor";
 import { Note } from "./domain/Note";
@@ -34,15 +34,11 @@ const App: React.FC = () => {
     setSelectedNote(null);
     setRefreshKey((prev) => prev + 1);
   }, []);
-
   return (
     <div className="app-layout">
       <aside className="sidebar">
         <div className="sidebar-header">
           <h2>Notlarım</h2>
-          <button className="new-note-btn" onClick={handleNewNote}>
-            + Yeni Not
-          </button>
         </div>
         <NoteList
           refreshKey={refreshKey}
@@ -50,7 +46,6 @@ const App: React.FC = () => {
           selectedNoteId={selectedNote?.id || null}
         />
       </aside>
-
       <main className="main-content">
         {/* Seçili not varsa edit, yoksa create modunda çalışır */}
         <NoteEditor selectedNote={selectedNote} onNoteSaved={handleNoteSaved} />
