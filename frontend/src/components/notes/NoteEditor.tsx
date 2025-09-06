@@ -30,17 +30,20 @@ const NoteEditor: React.FC<NoteFormProps> = ({ selectedNote, onNoteSaved }) => {
 
   return (
     <div className="note-editor">
-      <TitleWithSuggestions
-        title={title}
-        content={content}
-        onTitleChange={setTitle}
-      />
-      <textarea
-        value={content}
-        onChange={(e) => setContent(e.target.value)}
-        placeholder="İçerik..."
-        className="editor-content"
-      />
+      <div className="editor-container">
+        <TitleWithSuggestions
+          title={title}
+          content={content}
+          onTitleChange={setTitle}
+        />
+
+        <textarea
+          value={content}
+          onChange={(e) => setContent(e.target.value)}
+          placeholder="İçerik..."
+          className="editor-content"
+        />
+      </div>
     </div>
   );
 };

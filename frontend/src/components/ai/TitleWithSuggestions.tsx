@@ -17,6 +17,15 @@ const TitleWithSuggestions: React.FC<Props> = ({
   const [open, setOpen] = useState(false);
   const containerRef = useRef<HTMLDivElement>(null);
 
+  const titleRef = useRef<HTMLTextAreaElement>(null);
+
+  useEffect(() => {
+    if (titleRef.current) {
+      titleRef.current.style.height = "auto"; // önce sıfırla
+      titleRef.current.style.height = titleRef.current.scrollHeight + "px";
+    }
+  }, [title]);
+
   // Dışarıya tıklanınca kutuyu kapat
   useEffect(() => {
     const handleClickOutside = (e: MouseEvent) => {
@@ -45,35 +54,50 @@ const TitleWithSuggestions: React.FC<Props> = ({
   };
 
   return (
-    <div ref={containerRef} className="title-with-suggestions">
-      <input
-        type="text"
-        className="editor-title"
+    <div className="title-with-suggestions">
+      {/* SOL: buton + kutu */}
+      <div className="suggest-wrap">
+        <button
+          type="button"
+          className="suggest-btn"
+          onClick={handleClickButton}
+          aria-expanded={open}
+        >
+          🎲
+        </button>
+
+        {open && (
+          <div
+            className="suggest-box"
+            role="listbox"
+            aria-label="Başlık önerileri"
+          >
+            {loading && <div className="suggest-item">Yükleniyor…</div>}
+            {!loading &&
+              titles.slice(0, 3).map((t, i) => (
+                <button
+                  key={i}
+                  type="button"
+                  className="suggest-item"
+                  onClick={() => handlePick(t)}
+                >
+                  {t}
+                </button>
+              ))}
+            {!loading && titles.length === 0 && (
+              <div className="suggest-item">Öneri bulunamadı</div>
+            )}
+          </div>
+        )}
+      </div>
+      <textarea
+        ref={titleRef}
         value={title}
         onChange={(e) => onTitleChange(e.target.value)}
         placeholder="Başlık"
+        className="editor-title"
+        rows={1}
       />
-      <button type="button" className="suggest-btn" onClick={handleClickButton}>
-        🎲
-      </button>
-      {open && (
-        <div className="suggest-box">
-          {loading && <div className="suggest-item">Yükleniyor...</div>}
-          {!loading &&
-            titles.map((t, i) => (
-              <div
-                key={i}
-                className="suggest-item"
-                onClick={() => handlePick(t)}
-              >
-                {t}
-              </div>
-            ))}
-          {!loading && titles.length === 0 && (
-            <div className="suggest-item">Öneri bulunamadı</div>
-          )}
-        </div>
-      )}
     </div>
   );
 };

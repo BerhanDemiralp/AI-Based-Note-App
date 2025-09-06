@@ -1,34 +1,57 @@
-/* Genel Sıfırlamalar ve Temel Ayarlar */
+/* ========== Theme ========== */
+:root {
+  --bg: #fcf8f3;
+  --fg: #4a4a4a;
+  --panel: #f7f3ed;
+  --panel-border: #e0dcd7;
+  --muted-border: #f0edeb;
+  --muted-text: #5d5d5d;
+  --accent: #b08d6c;
+  --accent-hover: #9c7b5c;
+  --chip-hover: #fcf8f3;
+  --elev-1: 0 1px 3px rgba(0, 0, 0, 0.03);
+  --elev-2: 0 2px 6px rgba(0, 0, 0, 0.05);
+  --elev-3: 0 4px 12px rgba(0, 0, 0, 0.08);
+}
+
+/* ========== Base ========== */
+* {
+  box-sizing: border-box;
+}
+html,
+body,
+#root {
+  height: 100%;
+}
 body {
   margin: 0;
   font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "Roboto", "Oxygen",
     "Ubuntu", "Cantarell", "Fira Sans", "Droid Sans", "Helvetica Neue",
     sans-serif;
-  background-color: #fcf8f3; /* Çok açık krem/bej arka plan */
-  color: #4a4a4a; /* Koyu gri/kahve metin rengi */
+  background: var(--bg);
+  color: var(--fg);
   line-height: 1.6;
 }
 
-/* Ana Uygulama Düzeni */
+/* ========== Layout ========== */
 .app-layout {
   display: flex;
   height: 100vh;
   overflow: hidden;
-  box-shadow: 0 0 20px rgba(0, 0, 0, 0.08); /* Biraz daha belirgin gölge */
-  border-radius: 10px; /* Köşeleri daha yumuşat */
-  margin: 0;
+  border-radius: 10px;
+  box-shadow: 0 0 20px rgba(0, 0, 0, 0.08);
 }
 
-/* Sol Panel (Sidebar) */
+/* Sidebar */
 .sidebar {
   width: 280px;
-  background-color: #f7f3ed; /* Daha sıcak bej tonu */
-  border-right: 1px solid #e0dcd7; /* Uyumlu kenarlık rengi */
+  background: var(--panel);
+  border-right: 1px solid var(--panel-border);
   display: flex;
   flex-direction: column;
-  padding: 20px 0; /* Boşlukları artır */
+  padding: 20px 0;
   overflow-y: auto;
-  box-shadow: 2px 0 8px rgba(0, 0, 0, 0.03); /* Hafif gölge */
+  box-shadow: 2px 0 8px rgba(0, 0, 0, 0.03);
   flex-shrink: 0;
 }
 
@@ -36,22 +59,22 @@ body {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  padding: 0 20px 15px 20px;
-  border-bottom: 1px solid #e9e5df; /* Uyumlu alt çizgi */
+  padding: 0 20px 15px;
+  border-bottom: 1px solid #e9e5df;
   margin-bottom: 20px;
 }
 
 .sidebar-header h2 {
   margin: 0;
-  font-size: 1.35rem; /* Biraz daha büyük başlık */
-  color: #5d5d5d; /* Daha koyu kahverengimsi gri */
+  font-size: 1.35rem;
+  color: var(--muted-text);
   font-weight: 600;
 }
 
 .new-note-btn {
-  background-color: #b08d6c; /* Açık kahverengi/turuncu vurgu */
-  color: white;
-  border: none;
+  background: var(--accent);
+  color: #fff;
+  border: 0;
   padding: 9px 14px;
   border-radius: 6px;
   cursor: pointer;
@@ -59,158 +82,225 @@ body {
   font-weight: 500;
   transition: background-color 0.2s ease, transform 0.1s ease;
 }
-
 .new-note-btn:hover {
-  background-color: #9c7b5c; /* Hover'da daha koyu */
-  transform: translateY(-1px); /* Hafif yukarı kayma efekti */
+  background: var(--accent-hover);
+  transform: translateY(-1px);
 }
 
-/* Not Listesi */
+/* Note list */
 .note-list {
   flex: 1;
   padding: 0 15px;
 }
 
 .note-item-simple {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
   padding: 12px 18px;
-  border-radius: 8px; /* Daha yuvarlak köşeler */
   margin-bottom: 8px;
+  background: #fff;
+  border: 1px solid var(--muted-border);
+  border-radius: 8px;
   cursor: pointer;
-  transition: background-color 0.2s ease, box-shadow 0.2s ease,
-    border-color 0.2s ease;
-  background-color: #ffffff; /* Beyaz not arka planı */
-  border: 1px solid #f0edeb; /* Çok açık kenarlık */
-  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.03); /* Hafif gölge */
+  transition: background-color 0.2s ease, border-color 0.2s ease,
+    box-shadow 0.2s ease, transform 0.1s ease;
+  box-shadow: var(--elev-1);
 }
-
 .note-item-simple:hover {
-  background-color: #fcf8f3; /* Hover'da arka plan rengiyle uyumlu */
-  border-color: #e0dcd7;
-  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.05);
+  background: var(--bg);
+  border-color: var(--panel-border);
+  box-shadow: var(--elev-2);
 }
-
-/* Seçili Not İçin Özel Stil */
 .note-item-simple.selected {
-  background-color: #e2d8ce; /* Orta ton kahve vurgu */
-  border-color: #c9bdae; /* Daha koyu kenarlık */
+  background: #e2d8ce;
+  border-color: #c9bdae;
   box-shadow: 0 2px 5px rgba(0, 0, 0, 0.08);
-  transform: translateY(-1px); /* Seçili notu biraz yukarı kaldır */
+  transform: translateY(-1px);
 }
-
 .note-item-simple h3 {
   margin: 0;
   font-size: 1rem;
   font-weight: 500;
-  color: #4a4a4a;
+  color: var(--fg);
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
 }
 
-/* Ana İçerik Alanı (Editor) */
-.main-content {
-  flex: 1;
-  background-color: #ffffff; /* Editör alanı beyaz */
-  padding: 40px 60px; /* Daha geniş boşluklar */
-  display: flex;
-  flex-direction: column;
-  overflow-y: auto;
-  box-shadow: -2px 0 8px rgba(0, 0, 0, 0.02); /* Hafif sol gölge */
+/* Delete button (list item) */
+.note-item-simple .delete-btn {
+  background: #f7e0d3;
+  color: #a78875;
+  border: 1px solid var(--panel-border);
+  padding: 4px 8px;
+  font-size: 0.75rem;
+  border-radius: 5px;
+  cursor: pointer;
+  transition: background-color 0.2s ease, color 0.2s ease,
+    border-color 0.2s ease, transform 0.1s ease;
+  opacity: 0;
+  visibility: hidden;
+}
+.note-item-simple:hover .delete-btn {
+  opacity: 1;
+  visibility: visible;
+}
+.note-item-simple .delete-btn:hover {
+  background: var(--panel-border);
+  color: #8c6c59;
+  border-color: #c9bdae;
+  transform: translateY(-1px);
+}
+.note-item-simple .delete-btn:active {
+  background: #c9bdae;
+  color: #fff;
+  transform: translateY(0);
 }
 
+/* ========== Editor Area ========== */
+.main-content {
+  flex: 1;
+  background-color: #ffffff;
+  padding: 40px 60px;
+  display: flex;
+  justify-content: center; /* içerikleri yatayda ortaya al */
+  overflow-y: auto;
+  box-shadow: -2px 0 8px rgba(0, 0, 0, 0.02);
+}
+.editor-container {
+  width: min(860px, 100%); /* 860px sınır, mobilde %100 */
+  padding: 0 8px 40px;
+}
 .note-editor {
   display: flex;
   flex-direction: column;
-  flex: 1;
-  gap: 20px; /* Başlık ve içerik arasında daha fazla boşluk */
+  gap: 20px;
+  width: 100%;
+  max-width: 860px; /* editor genişliği sınırla */
 }
 
 .editor-title {
-  font-size: 2.8em; /* Daha büyük başlık fontu */
+  font-size: 2.6em;
   font-weight: 700;
   border: none;
   padding: 10px 0;
   width: 100%;
-  box-sizing: border-box;
-  color: #333333; /* Koyu gri başlık rengi */
-  resize: none;
+  color: #333;
   outline: none;
-  background-color: transparent;
-  margin-bottom: 20px; /* Başlık ile içerik arasında boşluk bırakır */
-  border-bottom: 1px solid #f0edeb; /* İnce bir ayraç çizgisi ekler */
+  background: transparent;
+  margin-bottom: 20px;
+  border-bottom: 1px solid #f0edeb;
+
+  /* textarea için */
+  resize: none; /* kullanıcı büyütmesin */
+  overflow: hidden; /* scrollbar çıkmasın */
+  white-space: pre-wrap; /* satır sonlarını ve boşlukları koru */
+  word-wrap: break-word; /* uzun kelimeleri kır */
 }
 
 .editor-title::placeholder {
-  color: #c4c4c4; /* Daha uyumlu placeholder rengi */
+  color: #c4c4c4;
 }
 
 .editor-content {
   flex: 1;
-  font-size: 1.15em; /* İçerik fontu biraz daha büyük */
-  line-height: 1.7;
+  font-size: 1.2em; /* Biraz daha büyük font */
+  line-height: 1.8; /* Daha ferah satır yüksekliği */
   border: none;
-  padding: 10px 0;
+  padding: 12px 0;
   width: 100%;
-  box-sizing: border-box;
-  color: #4a4a4a; /* Koyu gri/kahve metin rengi */
-  resize: none;
+  color: #4a4a4a;
   outline: none;
-  background-color: transparent;
-}
+  background: transparent;
 
+  /* Boyut kontrolü */
+  min-height: calc(100vh - 220px); /* editör alanını büyüt */
+  resize: vertical; /* kullanıcı boyunu ayarlayabilsin */
+}
 .editor-content::placeholder {
   color: #c4c4c4;
 }
 
-/* Eğer NoteDetailPlaceholder kullanıyorsanız */
-.note-detail-placeholder {
-  display: flex;
-  justify-content: center;
+/* ========== Title suggestions UI ========== */
+.title-with-suggestions {
+  display: grid;
+  grid-template-columns: auto 1fr;
   align-items: center;
-  height: 100%;
-  color: #999;
-  font-size: 1.2em;
-  text-align: center;
-  padding: 20px;
+  gap: 8px;
+  width: 100%;
+  overflow: visible; /* kutu kırpılmasın */
 }
-.note-item-simple .delete-btn {
-  background-color: #f7e0d3; /* Açık kahverengi/bej arka plan */
-  color: #a78875; /* Daha koyu kahverengimsi metin rengi */
-  border: 1px solid #e0dcd7; /* İnce, uyumlu kenarlık */
-  padding: 4px 8px; /* Daha küçük boşluk */
-  font-size: 0.75rem; /* Daha küçük font */
-  border-radius: 5px; /* Hafif yuvarlak köşeler */
+.title-with-suggestions .editor-title {
+  min-width: 0; /* grid altında taşmayı önle */
+}
+.suggest-wrap {
+  position: relative;
+  display: inline-block;
+  z-index: 200; /* kutu üste çıksın */
+}
+.suggest-btn {
+  background: var(--accent);
+  color: #fff;
+  border: 0;
+  padding: 6px 10px;
+  border-radius: 6px;
   cursor: pointer;
-  transition: background-color 0.2s ease, color 0.2s ease,
-    border-color 0.2s ease, transform 0.1s ease;
-  margin-left: 10px; /* Not başlığından biraz uzaklaştır */
-  align-self: flex-end; /* Öğenin sağına hizala */
-  opacity: 0; /* Başlangıçta gizli */
-  visibility: hidden; /* Başlangıçta gizli */
+  font-size: 0.95rem;
+  transition: background-color 0.2s ease, transform 0.1s ease;
+}
+.suggest-btn:hover {
+  background: var(--accent-hover);
+  transform: translateY(-1px);
+}
+.suggest-btn:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: 2px;
 }
 
-.note-item-simple:hover .delete-btn {
-  opacity: 1; /* Hover'da görünür */
-  visibility: visible; /* Hover'da görünür */
+.suggest-box {
+  position: absolute;
+  top: calc(100% + 6px);
+  left: 0;
+  width: min(520px, 80vw);
+  background: #fff;
+  border: 1px solid var(--panel-border);
+  border-radius: 8px;
+  box-shadow: var(--elev-3);
+  z-index: 300;
+  padding: 6px 0; /* iç boşluk */
+  overflow: hidden;
+}
+.suggest-item {
+  display: block;
+  width: 100%;
+  text-align: left;
+  background: #fff;
+  border: 0; /* UA default border’ı sıfırla */
+  margin: 0; /* UA default margin’ı sıfırla */
+  padding: 10px 12px;
+  font: inherit; /* fontu devral */
+  color: var(--fg);
+  cursor: pointer;
+  border-bottom: 1px solid var(--muted-border);
+  transition: background 0.15s ease, padding-left 0.15s ease;
+}
+.suggest-item:last-child {
+  border-bottom: none;
+}
+.suggest-item:hover {
+  background: var(--chip-hover);
+  padding-left: 16px;
 }
 
-.note-item-simple .delete-btn:hover {
-  background-color: #e0dcd7; /* Hover'da biraz daha koyu */
-  color: #8c6c59; /* Metin rengi koyulaşsın */
-  border-color: #c9bdae;
-  transform: translateY(-1px); /* Hafif yukarı kayma efekti */
+/* ========== Focus adjustments for accessibility ========== */
+input,
+textarea,
+button {
+  font-family: inherit;
 }
-
-.note-item-simple .delete-btn:active {
-  background-color: #c9bdae; /* Tıklandığında daha da koyu */
-  color: #fff; /* Tıklandığında beyaz metin */
-  transform: translateY(0); /* Normal pozisyona geri dön */
-}
-
-/* NoteItem-simple için flex düzeni ekleyelim ki buttonu sağa hizalayabilelim */
-.note-item-simple {
-  display: flex;
-  justify-content: space-between; /* Başlığı sola, butonu sağa */
-  align-items: center; /* Dikeyde ortala */
-  /* ... (Diğer note-item-simple stilleriniz) ... */
+input:focus-visible,
+textarea:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: 2px;
 }
