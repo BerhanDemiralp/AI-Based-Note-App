@@ -6,12 +6,14 @@ import { Note } from "../../domain/Note";
 import { createConfirmMessage } from "../../services/confirmService";
 interface NoteListProps {
   onSelectNote: (note: Note | null) => void;
+  handleDeleteNote?: (noteId: number) => void;
   selectedNoteId: number | null;
   refreshKey: number;
 }
 
 const NoteList: React.FC<NoteListProps> = ({
   onSelectNote,
+  handleDeleteNote,
   selectedNoteId,
   refreshKey,
 }) => {
@@ -30,7 +32,7 @@ const NoteList: React.FC<NoteListProps> = ({
     fetchNotes();
   }, [refreshKey]);
 
-  const handleDeleteNote = async (noteId: number) => {
+  const onDeleteNote = async (noteId: number) => {
     const isConfirmed = await createConfirmMessage(
       "Bu notu silmek istediğinizden emin misiniz?"
     );
@@ -43,10 +45,7 @@ const NoteList: React.FC<NoteListProps> = ({
       // Not başarıyla silindiğinde listeyi yeniden yükle
       setNotes((prevNotes) => prevNotes.filter((note) => note.id !== noteId));
 
-      // Eğer silinen not seçiliyse, seçimi kaldır
-      if (selectedNoteId === noteId) {
-        onSelectNote(null);
-      }
+      handleDeleteNote?.(noteId);
     } catch (error) {
       console.error("Not silinirken bir hata oluştu:", error);
       setError("Not silinirken bir hata oluştu.");
@@ -61,7 +60,7 @@ const NoteList: React.FC<NoteListProps> = ({
             key={note.id}
             note={note}
             onSelect={onSelectNote}
-            onDelete={handleDeleteNote}
+            onDelete={onDeleteNote}
             isSelected={note.id === selectedNoteId}
           />
         ))

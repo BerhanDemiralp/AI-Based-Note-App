@@ -1,6 +1,6 @@
 // frontend/src/App.tsx
 
-import React, { useState, useEffect, useCallback } from "react";
+import React, { useState, useCallback } from "react";
 import NoteList from "./components/notes/NoteList";
 import NoteEditor from "./components/notes/NoteEditor";
 import { Note } from "./domain/Note";
@@ -28,21 +28,28 @@ const App: React.FC = () => {
   const handleNewNote = useCallback(() => {
     setSelectedNote(null);
   }, []);
+  const handeDeleteNote = useCallback(
+    (noteId: number) => {
+      if (selectedNote?.id === noteId) {
+        setSelectedNote(null);
+      }
+    },
+    [selectedNote?.id]
+  );
 
-  // Not silme işlemi sonrası çalışır
-  const handleNoteDeleted = useCallback(() => {
-    setSelectedNote(null);
-    setRefreshKey((prev) => prev + 1);
-  }, []);
   return (
     <div className="app-layout">
       <aside className="sidebar">
         <div className="sidebar-header">
           <h2>Notlarım</h2>
+          <button className="new-note-btn" onClick={handleNewNote}>
+            + Yeni Not
+          </button>
         </div>
         <NoteList
           refreshKey={refreshKey}
           onSelectNote={handleSelectNote}
+          handleDeleteNote={handeDeleteNote}
           selectedNoteId={selectedNote?.id || null}
         />
       </aside>
