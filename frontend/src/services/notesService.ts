@@ -3,11 +3,8 @@ import {
   deleteNoteFromApi,
   updateNoteFromApi,
   addNoteToApi,
-  suggestTitleWithAIFromApi,
 } from "../api/notesApi";
 import { Note } from "../domain/Note";
-import { AIRequest, AIResponse } from "../domain/ai";
-import { normalizeContentForAI } from "../utils/normalizeText";
 /**
  * Notlarla ilgili iş mantığını yöneten servis.
  * Şu an için basit bir çağrıya sahiptir.
@@ -26,17 +23,4 @@ export const editNote = async (
   note: Omit<Note, "id">
 ): Promise<Note> => {
   return updateNoteFromApi(noteId, note);
-};
-export const suggestTitleWithAI = async (
-  request: AIRequest
-): Promise<AIResponse> => {
-  const safeContent = normalizeContentForAI(request.content);
-
-  const payload: AIRequest = {
-    ...request,
-    content: safeContent,
-  };
-
-  const data = await suggestTitleWithAIFromApi(payload);
-  return { response: Array.isArray(data?.response) ? data.response : [] };
 };

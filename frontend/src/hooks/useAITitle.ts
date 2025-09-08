@@ -1,6 +1,6 @@
 // src/hooks/useAiTitle.ts
 import { useState } from "react";
-import { suggestTitleWithAI } from "../services/notesService";
+import { suggestTitleWithAI } from "../services/aisService";
 
 export function useAiTitle() {
   const [titles, setTitles] = useState<string[]>([]);

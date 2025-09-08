@@ -1,11 +1,10 @@
 import axios from "axios";
 import { Note } from "../domain/Note";
-import { AIRequest, AIResponse } from "../domain/ai";
 
 // domain
 
-const NOTES_API_URL = "http://localhost:8000/notes";
-const AI_API_URL = "http://localhost:8000/ai";
+const NOTES_API_URL =
+  process.env.REACT_APP_NOTES_API_URL || "http://localhost:8000/notes";
 
 /**
  * API'den notları getiren fonksiyon.
@@ -29,19 +28,7 @@ export const addNoteToApi = async (note: Omit<Note, "id">): Promise<Note> => {
     throw new Error("Notları getirirken bir hata oluştu.");
   }
 };
-export const suggestTitleWithAIFromApi = async (
-  request: AIRequest
-): Promise<AIResponse> => {
-  try {
-    const response = await axios.post<AIResponse>(
-      `${AI_API_URL}/${"suggest-title"}`,
-      request
-    );
-    return response.data;
-  } catch (error) {
-    throw new Error("Başlık önerisi alınırken bir hata oluştu.");
-  }
-};
+
 export const deleteNoteFromApi = async (noteId: number): Promise<void> => {
   try {
     await axios.delete(`${NOTES_API_URL}/${noteId}`);

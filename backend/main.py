@@ -88,7 +88,7 @@ async def _suggest_titles_from_text(content: str, max_len: int = 120, n: int = 4
         "No prose. No prefixes. JSON array only."
     )
 
-    print("[AI DEBUG] === OpenAI çağrısı başlıyor ===")
+    print("[AI DEBUG] === Gemini çağrısı başlıyor ===")
     print("[AI DEBUG] Prompt:\n", system_prompt)
     print("[AI DEBUG] Content:\n", content[:200], "..." if len(content) > 200 else "")
 
@@ -100,7 +100,7 @@ async def _suggest_titles_from_text(content: str, max_len: int = 120, n: int = 4
         )
         print("[AI DEBUG] Raw response:", repr(raw[:500]), "..." if raw and len(raw) > 500 else "")
     except Exception as e:
-        print("[AI ERROR] OpenAI çağrısı başarısız:", e)
+        print("[AI ERROR] Gemini çağrısı başarısız:", e)
         return []
 
     titles = parse_json_array_of_strings(raw, max_len=max_len, fallback_lines=True)
