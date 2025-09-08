@@ -5,7 +5,8 @@ import {
   addNoteToApi,
   suggestTitleWithAIFromApi,
 } from "../api/notesApi";
-import { AIRequest, AIResponse, Note } from "../domain/Note";
+import { Note } from "../domain/Note";
+import { AIRequest, AIResponse } from "../domain/ai";
 import { normalizeContentForAI } from "../utils/normalizeText";
 /**
  * Notlarla ilgili iş mantığını yöneten servis.

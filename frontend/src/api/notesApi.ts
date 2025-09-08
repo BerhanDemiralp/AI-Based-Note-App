@@ -1,5 +1,6 @@
 import axios from "axios";
-import { Note, AIRequest, AIResponse } from "../domain/Note";
+import { Note } from "../domain/Note";
+import { AIRequest, AIResponse } from "../domain/ai";
 
 // domain
 

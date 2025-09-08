@@ -12,6 +12,8 @@ from fastapi.middleware.cors import CORSMiddleware
 
 from pydantic import BaseModel
 
+from redisCache import cache_init, cache_close, cache_get_json, cache_set_json, title_key, normalize_text
+
 from sqlalchemy import create_engine, Column, Integer, String, Text
 from sqlalchemy.orm import declarative_base
 
@@ -66,7 +68,6 @@ class NoteInDB(BaseModel):
 class AIRequest(BaseModel):
     content: str
     max_len: int = 60
-    language: str = "tr"  # şimdilik kontrat alanı; model dil çıkarımı yapabilir
     n: int = 3
 
 class AIResponse(BaseModel):
@@ -120,10 +121,12 @@ async def _suggest_titles_from_text(content: str, max_len: int = 120, n: int = 4
 @asynccontextmanager
 async def lifespan(app: FastAPI):
     await database.connect()
+    await cache_init()          
     try:
         yield
     finally:
         await database.disconnect()
+        await cache_close()
 
 app = FastAPI(lifespan=lifespan)
 
@@ -144,7 +147,26 @@ app.add_middleware(
 # ================================
 @app.post("/ai/suggest-title", response_model=AIResponse)
 async def suggest_title(req: AIRequest):
-    titles = await _suggest_titles_from_text(req.content, max_len=req.max_len, n=req.n)
+    # 1) Key
+    key = title_key(req.content, req.n, req.max_len)
+
+    # 2) Cache GET
+    hit = await cache_get_json(key)
+    if hit:
+        # hit = ["title1", "title2", ...]
+        return AIResponse(response=hit)
+
+    # 3) Üret (mevcut fonksiyonun)
+    titles = await _suggest_titles_from_text(
+        normalize_text(req.content),  # küçük normalize
+        max_len=req.max_len,
+        n=req.n
+    )
+
+    # 4) Cache SETEX
+    if titles:
+        await cache_set_json(key, titles)
+
     return AIResponse(response=titles)
 
 # ================================
@@ -177,10 +199,7 @@ async def update_note(note_id: int, note: NoteUpdate):
     if not existing:
         raise HTTPException(status_code=404, detail="Not bulunamadı.")
 
-    try:
-        values = note.model_dump(exclude_unset=True)  # Pydantic v2
-    except Exception:
-        values = note.dict(exclude_unset=True)        # Pydantic v1
+    values = note.model_dump(exclude_unset=True)
 
     if not values:
         return NoteInDB(id=existing["id"], title=existing["title"], content=existing["content"])

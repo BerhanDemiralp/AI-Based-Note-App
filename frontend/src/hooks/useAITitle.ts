@@ -13,7 +13,6 @@ export function useAiTitle() {
       const res = await suggestTitleWithAI({
         content,
         max_len: 60,
-        language: "tr",
         n: 3,
       });
       setTitles(res.response);
